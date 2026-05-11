@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Notes App</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      padding: 20px;
+      max-width: 700px;
+      margin: auto;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    input {
+      padding: 10px;
+      margin: 5px 0;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    button {
+      padding: 10px 15px;
+      margin-top: 5px;
+      cursor: pointer;
+    }
+
+    .note {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 15px;
+      margin-top: 10px;
+    }
+
+    .actions {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Notes App</h1>
+
+<input type="text" id="title" placeholder="Title">
+<input type="text" id="content" placeholder="Content">
+
+<button onclick="addNote()">Add Note</button>
+
+<hr>
+
+<div id="notes"></div>
+
+<script>
+
+const API = "https://notes-backend-132702792159.us-central1.run.app";
+
+async function getNotes() {
+  const res = await fetch(API + "/notes");
+  const data = await res.json();
+
+  document.getElementById("notes").innerHTML =
+    data.map(note => `
+      <div class="note">
+        <h3>${note.title}</h3>
+        <p>${note.content}</p>
+
+        <div class="actions">
+          <button onclick="editNote(${note.id}, '${note.title}', '${note.content}')">
+            Edit
+          </button>
+
+          <button onclick="deleteNote(${note.id})">
+            Delete
+          </button>
+        </div>
+      </div>
+    `).join("");
+}
+
+async function addNote() {
+  const title = document.getElementById("title").value;
+  const content = document.getElementById("content").value;
+
+  await fetch(API + "/notes", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      title,
+      content
+    })
+  });
+
+  document.getElementById("title").value = "";
+  document.getElementById("content").value = "";
+
+  getNotes();
+}
+
+async function deleteNote(id) {
+  await fetch(API + "/notes/" + id, {
+    method: "DELETE"
+  });
+
+  getNotes();
+}
+
+async function editNote(id, oldTitle, oldContent) {
+
+  const title = prompt("Edit title:", oldTitle);
+  const content = prompt("Edit content:", oldContent);
+
+  await fetch(API + "/notes/" + id, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      title,
+      content
+    })
+  });
+
+  getNotes();
+}
+
+getNotes();
+
+</script>
+
+</body>
+</html>
