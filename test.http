@@ -1,0 +1,26 @@
+### GET NOTES
+GET https://notes-backend-132702792159.us-central1.run.app/notes
+
+
+### ADD NOTE
+POST https://notes-backend-132702792159.us-central1.run.app/notes
+Content-Type: application/json
+
+{
+  "title": "Test",
+  "content": "Hello"
+}
+
+
+### UPDATE NOTE
+PUT https://notes-backend-132702792159.us-central1.run.app/notes/1
+Content-Type: application/json
+
+{
+  "title": "Updated",
+  "content": "Updated Content"
+}
+
+
+### DELETE NOTE
+DELETE https://notes-backend-132702792159.us-central1.run.app/notes/1
